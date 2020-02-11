@@ -1,2 +1,1 @@
 # PyLinkPred
- LP in Python
