@@ -1,13 +1,17 @@
-from metrics import evaluationMetric
-from metrics import metric
-from metrics import AUC
+#coding=UTF-8
+'''
+有向网络中的链路预测程序
+'''
+import train_test_split
+from Metrics import evaluationMetric
+from Metrics import metric
+from Metrics import AUC
 import networkx as nx
 import numpy as np
 import numpy.matlib
 import time
 import random
 
-# ig = nx.DiGraph()
 
 def create_vertex(nodepair_set):
     vertex_set = {}
@@ -21,6 +25,7 @@ def create_vertex(nodepair_set):
             num += 1
     return vertex_set
 
+
 def create_adjmatrix(nodepair_set, vertex_set):
     '''
                 nodepair_set  [ [i,j],[p,q],....]
@@ -33,6 +38,7 @@ def create_adjmatrix(nodepair_set, vertex_set):
             init_matrix[vertex_set[pair[0]]] [vertex_set[pair[1]]] = 1
     return init_matrix
 
+
 def AA(train_adj):
     deg_out = np.matlib.repmat(train_adj.sum(0).T, len(train_adj), 1).T
     # deg_in = np.matlib.repmat(train_adj.sum(1).T, len(train_adj),1)
@@ -42,6 +48,7 @@ def AA(train_adj):
     sim = np.dot(train_adj, temp)
     return sim
 
+
 def RA(train_adj):
     deg_out = np.matlib.repmat(train_adj.sum(0).T, len(train_adj), 1).T
     # deg_in = np.matlib.repmat(train_adj.sum(1).T, len(train_adj),1)
@@ -50,6 +57,7 @@ def RA(train_adj):
     temp[np.isinf(temp)] = 0
     sim = np.dot(train_adj, temp)
     return sim
+
 
 def IP(train_adj,sigma):
     deg_out = np.matlib.repmat(train_adj.sum(0).T, len(train_adj), 1).T
@@ -69,66 +77,51 @@ def IP(train_adj,sigma):
     sim = sigma*simtemp1 + (1-sigma)*simtemp2
     return sim
 
-n_folds = 10
-linklist = []
-nodepair_set = [[] for i in range(0, n_folds)]
 
-# with open("./datasets/wikivote_sorted.txt","r") as f_r:
-# with open("./datasets/ucirvine_sorted.txt","r") as f_r:
-with open("./datasets/dnc_sorted.txt", "r") as f_r:
-    lines = f_r.readlines()
-    for line in lines:
-        if "%" in line:
-            continue
-        data = line.strip('\n').split()
-        linklist.append([int(data[0]), int(data[1])])
-        nodepair_set[random.randint(0, n_folds - 1)].append([int(data[0]), int(data[1])])
-        # new_line = data[0] + ' ' + data[1] + ' 1\n'
-        # f_w.write(new_line)
+if __name__ == '__main__':
 
+    n_folds = 10
+    linklist = []
     train_list = []
-    for templist in nodepair_set[0:8]:
-        train_list = train_list + templist
-    test_list = nodepair_set[9]
-    nodelist = create_vertex(linklist)
+    test_list = []
+    # nodepair_set = [[] for i in range(0, n_folds)]
+    f = open("./Datasets/temporal_sort/email-Eu-core-temporal_sorted.txt", "r")
+    train_list, test_list = train_test_split.train_test_split(f, 0.8)
+    # f_t = open("train.txt", "r")
+    # f_te = open("test.txt", "r")
+    # for line in f_t.readlines():
+    #     if "%" in line:
+    #         continue
+    #     data = line.strip('\n').split()
+    #     train_list.append([int(data[0]), int(data[1])])
+    #     # linklist.append([int(data[0]), int(data[1])])
+    #     # nodepair_set[random.randint(0, n_folds - 1)].append([int(data[0]), int(data[1])])
+    #     # new_line = data[0] + ' ' + data[1] + ' 1\n'
+    #     # f_w.write(new_line)
+    # for line in f_te.readlines():
+    #     if "%" in line:
+    #         continue
+    #     data = line.strip('\n').split()
+    #     test_list.append([int(data[0]), int(data[1])])
+
+    # train_list = []
+    # for templist in nodepair_set[0:8]:
+    #     train_list = train_list + templist
+    # test_list = nodepair_set[9]
+    nodelist = create_vertex(train_list)
     train_adj = create_adjmatrix(train_list, nodelist)
     test_adj = create_adjmatrix(test_list, nodelist)
     # print(train_adj)
-    sim_cn = np.dot(train_adj, train_adj)
-    sim_bifan = np.dot(np.dot(train_adj, train_adj.T), train_adj)
-    sim_AA = nx.adamic_adar_index(train_adj)
-    sim_RA = AA(train_adj)
-    sim_IP = IP(train_adj, 0.8)
+    # sim_bifan = np.dot(np.dot(train_adj, train_adj.T), train_adj)
+    # sim_AA = nx.adamic_adar_index(train_adj)
+    # sim_RA = AA(train_adj)
+    # sim_IP = IP(train_adj, 0.8)
     # sim_jaccard = Jaccard(train_adj)
     # cn_score_1 = AUC.Calculation_AUC(train_adj, test_adj, sim_cn, len(nodelist))
     # cn_score_2 = evaluationMetric.cal_AUC(train_adj, test_adj, sim_cn, 10000)
-    cn_score_3 = metric.auc_score(sim_cn, test_adj, train_adj,'cc')
-    # RA_score_1 = AUC.Calculation_AUC(train_adj, test_adj, sim_RA, len(nodelist))
-    # RA_score_2 = evaluationMetric.cal_AUC(train_adj, test_adj, sim_RA, 10000)
-    AA_score_3 = metric.auc_score(sim_AA, test_adj, train_adj, 'cc')
-    RA_score_3 = metric.auc_score(sim_RA, test_adj, train_adj, 'cc')
-    # bifan_score_1 = AUC.Calculation_AUC(train_adj, test_adj, sim_bifan, len(nodelist))
-    # bifan_score_2 = evaluationMetric.cal_AUC(train_adj, test_adj, sim_bifan, 10000)
-    bifan_score_3 = metric.auc_score(sim_bifan, test_adj, train_adj,'cc')
-
-    IP_score = metric.auc_score(sim_IP, test_adj, train_adj, 'cc')
-    # print(cn_score_1)
-    # print(cn_score_2)
-    print(cn_score_3)
-    print(AA_score_3)
-    # print(RA_score_1)
-    # print(RA_score_2)
-    print(RA_score_3)
-    # print(bifan_score_1)
-    # print(bifan_score_2)
-    print(bifan_score_3)
-    print(IP_score)
-    # cn_score = evaluationMetric.cal_AUC(train_adj, test_adj, sim_cn, 10000)
-    # cn_precision = evaluationMetric.cal_precision(train_adj, test_adj, sim_cn, 20)
-    # jc_score = evaluationMetric.cal_AUC(train_adj, test_adj, sim_jaccard, 10000)
-    # jc_precision = evaluationMetric.cal_precision(train_adj, test_adj, sim_cn, 20)
-    # # score = metrics.auc_score(sim_cn, test_adj, train_adj)
+    sim_cn = np.dot(train_adj, train_adj)
+    # cn_score = metric.auc_score(sim_cn, test_adj, train_adj, 'cc')
     # print(cn_score)
-    # print(cn_precision)
-    # print(jc_score)
-    # print(jc_precision)
+    cn_score = AUC.Calculation_AUC(train_adj, test_adj, sim_cn, len(nodelist))
+    print(cn_score)
+    # cn_score = evaluationMetric.cal_AUC(train_adj, test_adj, sim_cn, 10000)

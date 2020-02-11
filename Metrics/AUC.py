@@ -1,20 +1,18 @@
 #coding=UTF-8
 '''
-Created on 2016��11��19��
-
-@author: ZWT
+与Matlab中的CalcAUC_directed()结果基本一致
 '''
 import numpy as np
-import time
+# import time
 def Calculation_AUC(MatrixAdjacency_Train,MatrixAdjacency_Test,Matrix_similarity,MaxNodeNum):
-    AUC_TimeStart = time.clock()
+    # AUC_TimeStart = time.clock()
     AUCnum = 672400
     
-    Matrix_similarity = np.triu(Matrix_similarity - Matrix_similarity * MatrixAdjacency_Train)
+    Matrix_similarity = Matrix_similarity - Matrix_similarity * MatrixAdjacency_Train
     Matrix_NoExist = np.ones(MaxNodeNum) - MatrixAdjacency_Train - MatrixAdjacency_Test - np.eye(MaxNodeNum)
      
-    Test = np.triu(MatrixAdjacency_Test)
-    NoExist = np.triu(Matrix_NoExist)
+    Test = MatrixAdjacency_Test
+    NoExist = Matrix_NoExist
     
 #     Test_num =len(np.argwhere(Test == 1))
 #     NoExist_num = len(np.argwhere(NoExist == 1))
@@ -26,8 +24,8 @@ def Calculation_AUC(MatrixAdjacency_Train,MatrixAdjacency_Test,Matrix_similarity
 #     print '    Test_num：%d'%Test_num
 #     print '    NoExist_num：%d'%NoExist_num
       
-    Test_rd = [int(x) for index,x in enumerate((Test_num * np.random.rand(1,AUCnum))[0])]
-    NoExist_rd = [int(x) for index,x in enumerate((NoExist_num * np.random.rand(1,AUCnum))[0])]
+    Test_rd = [int(x) for index, x in enumerate((Test_num * np.random.rand(1, AUCnum))[0])]
+    NoExist_rd = [int(x) for index, x in enumerate((NoExist_num * np.random.rand(1, AUCnum))[0])]
 #     print '    Test_rd：'+str(Test_rd)
 #     print '    Test_rd长度：'+str(len(Test_rd))
 #     print '    Test_rd最大值：'+str(max(Test_rd))
@@ -37,16 +35,16 @@ def Calculation_AUC(MatrixAdjacency_Train,MatrixAdjacency_Test,Matrix_similarity
     NoExistPre = Matrix_similarity * NoExist
     
     TestIndex = np.argwhere(Test == 1)
-    Test_Data = np.array([TestPre[x[0],x[1]] for index,x in enumerate(TestIndex)]).T
+    Test_Data = np.array([TestPre[x[0], x[1]] for index, x in enumerate(TestIndex)]).T
     NoExistIndex = np.argwhere(NoExist == 1)
-    NoExist_Data = np.array([NoExistPre[x[0],x[1]] for index,x in enumerate(NoExistIndex)]).T
+    NoExist_Data = np.array([NoExistPre[x[0], x[1]] for index, x in enumerate(NoExistIndex)]).T
 #     print Test_Data
 #     print Test_Data.shape
 #     print NoExist_Data
 #     print NoExist_Data.shape
     
-    Test_rd = np.array([Test_Data[x] for index,x in enumerate(Test_rd)])
-    NoExist_rd = np.array([NoExist_Data[x] for index,x in enumerate(NoExist_rd)])
+    Test_rd = np.array([Test_Data[x] for index, x in enumerate(Test_rd)])
+    NoExist_rd = np.array([NoExist_Data[x] for index, x in enumerate(NoExist_rd)])
 #     print Test_rd
 #     print Test_rd.shape
 #     print NoExist_rd
@@ -55,7 +53,7 @@ def Calculation_AUC(MatrixAdjacency_Train,MatrixAdjacency_Test,Matrix_similarity
 #     aucArray = Test_rd - NoExist_rd
 #     n1 = len(np.argwhere(aucArray > 0))
 #     n2 = len(np.argwhere(aucArray == 0))
-    n1,n2 = 0,0
+    n1, n2 = 0, 0
     for num in range(AUCnum):
         if Test_rd[num] > NoExist_rd[num]:
             n1 += 1
@@ -64,5 +62,5 @@ def Calculation_AUC(MatrixAdjacency_Train,MatrixAdjacency_Test,Matrix_similarity
         else:
             n1 += 0
     auc = float(n1+n2)/AUCnum
-    AUC_TimeEnd = time.clock()
+    # AUC_TimeEnd = time.clock()
     return auc
