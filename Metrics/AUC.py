@@ -4,9 +4,8 @@
 '''
 import numpy as np
 # import time
-def Calculation_AUC(MatrixAdjacency_Train,MatrixAdjacency_Test,Matrix_similarity,MaxNodeNum):
+def Calculation_AUC(MatrixAdjacency_Train,MatrixAdjacency_Test,Matrix_similarity,MaxNodeNum,AUCnum):
     # AUC_TimeStart = time.clock()
-    AUCnum = 672400
     
     Matrix_similarity = Matrix_similarity - Matrix_similarity * MatrixAdjacency_Train
     Matrix_NoExist = np.ones(MaxNodeNum) - MatrixAdjacency_Train - MatrixAdjacency_Test - np.eye(MaxNodeNum)

@@ -1,3 +1,5 @@
+# coding=UTF-8
+
 from metrics import evaluationMetric
 from metrics import metric
 from metrics import AUC
@@ -24,10 +26,10 @@ def create_vertex(nodepair_set):
 
 
 def create_adjmatrix(nodepair_set, vertex_set):
-    '''
+    """
                 nodepair_set  [ [i,j],[p,q],....]
                 根据不同的顶点对，产生不同邻接矩阵
-    '''
+    """
     init_matrix = np.zeros([len(vertex_set), len(vertex_set)])
 
     for pair in nodepair_set:
