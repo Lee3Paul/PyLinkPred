@@ -23,9 +23,9 @@ def read_from_txt(f_tr, f_te):
     for line in f_te.readlines():
         data = line.strip('\n').split()
         test_list.append([int(data[0]), int(data[1])])
-    node_list = handle_list_matrix.create_vertex(train_list)
-    train = handle_list_matrix.create_adjmatrix(train_list, node_list)
-    test = handle_list_matrix.create_adjmatrix(test_list, node_list)
+    node_list, max_node = handle_list_matrix.create_vertex(train_list)
+    train = handle_list_matrix.create_adjmatrix(train_list, node_list, max_node)
+    test = handle_list_matrix.create_adjmatrix(test_list, node_list, max_node)
     return train, test
 
 
@@ -79,6 +79,26 @@ def k_fold_split_fr(fr, n_folds):
 
 
 def k_fold_split(linklist, n_folds):
+    """
+    输入：边列表，K折数量
+    输出：划分数据集
+    划分方法：划分为K段，每次随机选用一段作为测试集
+    """
+    group_linklist = [[] for i in range(0, n_folds)]
+    for i in linklist:
+        group_linklist[random.randint(0, n_folds - 1)].append([int(i[0]), int(i[1])])
+    train_list = []
+    for templist in group_linklist[0:(n_folds - 2)]: # 将其中K-1份作为训练集
+        train_list = train_list + templist
+    test_list = group_linklist[n_folds - 1] # 将其中1份作为测试集
+    print(len(train_list), len(test_list))
+    node_list = handle_list_matrix.create_vertex(train_list)
+    train = handle_list_matrix.create_adjmatrix(train_list, node_list)
+    test = handle_list_matrix.create_adjmatrix(test_list, node_list)
+    return train, test
+
+
+def k_fold_split_alter(linklist, n_folds):
     """
     输入：边列表，K折数量
     输出：划分数据集

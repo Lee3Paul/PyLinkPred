@@ -1,4 +1,4 @@
-def auc_score(matrix_score,matrix_test,matrix_train,n_compare=10):
+def auc_score(matrix_score, matrix_test, matrix_train, n_compare=10):
     '''
             根据测试顶点的邻接矩阵，分出发生链接与没有发生链接的集合
             n_compare: int,'cc' ，计算auc比较次数，当该参数输入为int型时为比较次数，当输入为cc时以为Complete comparison，完全比较，默认参数为10
