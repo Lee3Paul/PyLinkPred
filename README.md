@@ -1,2 +1,2 @@
 # PyLinkPred
-LP algorithms written in Python
+Codes for LP in complex networks written in Python.
