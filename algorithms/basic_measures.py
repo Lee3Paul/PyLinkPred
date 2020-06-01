@@ -50,7 +50,7 @@ def PA(train_adj):
     return deg_out*deg_in
 
 
-def LP(train_adj, alpha):
+def LP(train_adj, alpha=0.01):
     """
     Local Path index
     :param train_adj:
@@ -71,7 +71,7 @@ def Bifan(train_adj):
     return np.dot(train_adj, np.dot(train_adj.T, train_adj))
 
 
-def Katz(train_adj, alpha):
+def Katz(train_adj, alpha=0.01):
     """
     Katz index
     :param train_adj:
@@ -82,7 +82,7 @@ def Katz(train_adj, alpha):
     return np.linalg.inv(I_eye-alpha*train_adj)-I_eye
 
 
-def LO(train_adj, alpha):
+def LO(train_adj, alpha=0.01):
     """
     Linear Optimization index
     :param train_adj:
@@ -95,7 +95,7 @@ def LO(train_adj, alpha):
     return np.dot(train_adj, alpha*np.dot(temp2, temp1))
 
 
-def IP(train_adj, sigma):
+def IP(train_adj, sigma=0.5):
     """
     Investment-Profit index
     :param train_adj:

@@ -5,7 +5,7 @@
 
 from preprocess import prehandle_dataset
 from preprocess import train_test_split
-from metrics import metric
+from metrics import evaluationMetric
 from metrics import AUC
 from algorithms import basic_measures
 import numpy as np
@@ -21,12 +21,16 @@ if __name__ == '__main__':
     network = "PB"
     N_exp = 5
 
-    auc_CN = np.zeros((1, 5))
+    auc = np.zeros((1, N_exp))
+    pre = np.zeros((1, N_exp))
     for ith_exp in range(N_exp):
         f_tr = open("./divided_dataset/"+network+"_tr_0.9_"+str(ith_exp+1)+".txt", "r")
         f_te = open("./divided_dataset/"+network+"_te_0.9_"+str(ith_exp+1)+".txt", "r")
         adj_train, adj_test = train_test_split.read_from_txt(f_tr, f_te)
-        sim_CN = basic_measures.IP(adj_train, 0.5)
-        auc_CN[0, ith_exp] = AUC.Calculation_AUC(adj_train, adj_test, sim_CN, adj_train.shape[0], 10000)
-    print(auc_CN.mean())
+        sim = basic_measures.Bifan(adj_train)
+        auc[0, ith_exp] = AUC.Calculation_AUC(adj_train, adj_test, sim, adj_train.shape[0], 10000)
+        pre[0, ith_exp] = evaluationMetric.cal_precision(adj_train, adj_test, sim, 100)
+    print(auc.mean())
+    print(pre.mean())
+
 
